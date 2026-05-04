@@ -91,25 +91,25 @@
       z-index: 1;
       max-width: 720px;
       margin: 0 auto;
-      padding: 32px 20px 60px;
+      padding: 0 14px 18px;
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Progress oben — ruhig, klar */
+    /* Progress oben — ruhig, klar, sticky am Top */
     .progress {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 14px;
-      padding: 10px 18px;
-      margin: 0 auto 28px;
+      padding: 8px 16px;
+      margin: 8px auto 12px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 9999px;
-      font-size: 18px;
+      font-size: 17px;
       color: var(--ink-soft);
       font-weight: 600;
     }
@@ -155,10 +155,10 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-card);
-      padding: 32px 24px;
+      padding: 24px 22px;
     }
 
-    .card + .card { margin-top: 20px; }
+    .card + .card { margin-top: 16px; }
 
     /* Headlines */
     h1, h2, h3 {
@@ -490,12 +490,12 @@
       visibility: visible;
     }
 
-    /* Hero-Illustration */
+    /* Hero-Illustration — bündig oben in der Karte */
     .hero-img {
-      width: 100%;
-      max-width: 380px;
-      margin: 0 auto 24px;
-      border-radius: var(--radius-md);
+      width: calc(100% + 44px);
+      max-width: none;
+      margin: -24px -22px 20px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
       display: block;
     }
 
@@ -803,22 +803,31 @@
 
     function renderColor() {
       const colors = getAllColors(ROLLATORS);
+      const EGAL = 'Ist mir egal';
+      const isEgal = state.colors.includes(EGAL);
+      const renderSwatch = (c) => {
+        const bg = colorBg(c);
+        const selected = state.colors.includes(c);
+        return `
+          <button class="swatch ${selected ? 'selected' : ''}" data-action="color-toggle" data-color="${c}" aria-pressed="${selected}">
+            <span class="swatch-disc" style="background: ${bg};" aria-hidden="true"></span>
+            <span>${c}</span>
+          </button>
+        `;
+      };
+      const egalSelected = isEgal;
       return `
         <div class="card">
           <h2>Welche Farben magst du?</h2>
-          <p>Tipp alle an, die dir gefallen. Du kannst auch nichts auswählen — dann ist es uns egal.</p>
-          <div class="swatches">
-            ${colors.map(c => {
-              const bg = colorBg(c);
-              const selected = state.colors.includes(c);
-              return `
-                <button class="swatch ${selected ? 'selected' : ''}" data-action="color-toggle" data-color="${c}" aria-pressed="${selected}">
-                  <span class="swatch-disc" style="background: ${bg};" aria-hidden="true"></span>
-                  <span>${c}</span>
-                </button>
-              `;
-            }).join('')}
+          <p>Du kannst auch mehrere Farben antippen.</p>
+          <div class="swatches" ${egalSelected ? 'style="opacity:0.4;"' : ''}>
+            ${colors.map(renderSwatch).join('')}
           </div>
+          <button class="choice ${egalSelected ? 'selected' : ''}" data-action="color-toggle" data-color="${EGAL}" style="margin-top: 14px;" aria-pressed="${egalSelected}">
+            <span class="choice-emoji" aria-hidden="true">🤷</span>
+            <span class="choice-label">Ist mir egal</span>
+            <span class="choice-check" aria-hidden="true"></span>
+          </button>
         </div>
       `;
     }
@@ -837,7 +846,11 @@
     const introSlide = document.querySelector('[data-slide="intro"]');
     const resultSlide = document.querySelector('[data-slide="result"]');
 
+    let lastRenderedStep = null;
+
     function renderStep() {
+      const stepChanged = state.stepIndex !== lastRenderedStep;
+
       // intro & result toggling
       introSlide.classList.toggle('active', state.stepIndex === -1);
       resultSlide.classList.toggle('active', state.stepIndex === STEPS.length);
@@ -866,8 +879,12 @@
         document.getElementById('result-text').textContent = buildResultText();
       }
 
-      // Smooth scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll nach oben NUR wenn sich der Schritt geändert hat — sonst bleibt
+      // Oma da, wo sie gerade hingetippt hat (kein Hin-und-Her-Scrollen).
+      if (stepChanged) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        lastRenderedStep = state.stepIndex;
+      }
     }
 
     function renderProgress() {
@@ -980,10 +997,14 @@
       }
 
       if (state.colors.length) {
-        const list = state.colors.length === 1
-          ? state.colors[0]
-          : state.colors.slice(0, -1).join(', ') + ' oder ' + state.colors.slice(-1);
-        lines.push(`Farbe: ${list}`);
+        if (state.colors.length === 1 && state.colors[0] === 'Ist mir egal') {
+          lines.push('Farbe ist mir egal');
+        } else {
+          const list = state.colors.length === 1
+            ? state.colors[0]
+            : state.colors.slice(0, -1).join(', ') + ' oder ' + state.colors.slice(-1);
+          lines.push(`Farbe: ${list}`);
+        }
         lines.push('');
       }
 
@@ -1062,9 +1083,17 @@
 
         case 'color-toggle': {
           const c = target.dataset.color;
+          const EGAL = 'Ist mir egal';
           const idx = state.colors.indexOf(c);
-          if (idx >= 0) state.colors.splice(idx, 1);
-          else state.colors.push(c);
+          if (idx >= 0) {
+            state.colors.splice(idx, 1);
+          } else if (c === EGAL) {
+            // "Ist mir egal" exclusive — alle anderen abwählen
+            state.colors = [EGAL];
+          } else {
+            // konkrete Farbe — "Ist mir egal" entfernen falls aktiv
+            state.colors = state.colors.filter(x => x !== EGAL).concat(c);
+          }
           renderStep();
           break;
         }
