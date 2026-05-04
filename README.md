@@ -2,7 +2,7 @@
 
 Ein kleiner Single-Page-Wizard, mit dem meine Oma (85) aus einer kuratierten Auswahl an leichten, faltbaren Rollatoren ihre Lieblinge wählen kann. Am Ende generiert die Seite einen kopierbaren Text, den sie mir per WhatsApp schicken kann.
 
-**Live:** [rollator.shroomlife.de via GitHub Pages](https://shroomlife.github.io/rollator-wizard/)
+**Live:** https://shroomlife.github.io/rollator-wizard/
 
 ## Kontext
 
