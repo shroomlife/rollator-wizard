@@ -3,13 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Rollator-Wahl für Oma · Wizard</title>
-  <meta name="description" content="Liebe Oma, hier kannst du dir deine Lieblings-Rollatoren aussuchen. Am Ende schickst du mir das Ergebnis per WhatsApp." />
+  <title>Rollator-Wahl für Oma Monika · Wizard</title>
+  <meta name="description" content="Liebe Oma Monika, hier kannst du dir deine Lieblings-Rollatoren aussuchen. Am Ende schickst du mir das Ergebnis per WhatsApp." />
   <meta name="theme-color" content="#fafbf7" />
+
+  <!-- Privater Familien-Wizard — keine Suchmaschinen-Indexierung erwünscht -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
 
   <!-- Open Graph für WhatsApp-Sharing -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Rollator-Wahl für Oma 🫶" />
+  <meta property="og:title" content="Rollator-Wahl für Oma Monika 🫶" />
   <meta property="og:description" content="Such dir aus, welcher Rollator dir am meisten gefällt — wir nehmen ihn mit an die Ostsee." />
   <meta property="og:image" content="./assets/og-image.webp" />
   <meta property="og:image:width" content="1820" />
@@ -255,12 +260,12 @@
       background: var(--surface);
       border-radius: var(--radius-md);
       border: 3px solid var(--border);
-      padding: 16px 16px 22px;
+      padding: 8px 8px 14px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 14px;
+      gap: 10px;
       text-align: center;
       width: 100%;
       font-family: inherit;
@@ -279,42 +284,41 @@
     .duel-card.selected::after {
       content: '✓';
       position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 44px;
-      height: 44px;
+      top: 14px;
+      right: 14px;
+      width: 52px;
+      height: 52px;
       background: var(--accent);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
+      font-size: 30px;
       font-weight: 800;
+      box-shadow: 0 4px 12px rgba(47, 143, 94, 0.35);
     }
 
+    /* Bild dominiert die Karte — transparenter Hintergrund (Recraft remove_background),
+       direkt auf der Karte, ohne Container-Box */
     .duel-img {
       width: 100%;
-      height: 240px;
+      height: 300px;
       object-fit: contain;
-      border-radius: 14px;
-      background: var(--surface);
+      background: transparent;
       display: block;
     }
 
-    .duel-name {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.2;
-      margin: 0 0 4px;
+    @media (min-width: 540px) {
+      .duel-img { height: 360px; }
     }
 
     .duel-trait {
-      font-size: 18px;
+      font-size: 17px;
       color: var(--ink-soft);
-      line-height: 1.35;
+      line-height: 1.3;
       margin: 0;
+      padding: 0 8px;
     }
 
     /* Multi-Choice — klare Liste */
@@ -518,10 +522,10 @@
     <!-- 0: INTRO -->
     <section class="slide active" data-slide="intro">
       <div class="card" style="text-align: center;">
-        <img src="./assets/og-image.webp" alt="Oma am Strand" class="hero-img" />
-        <h1>Hallo Oma 🫶</h1>
+        <img src="./assets/og-image.webp" alt="Oma Monika am Strand" class="hero-img" />
+        <h1>Hallo Oma Monika 🫶</h1>
         <p class="lead">
-          Ich suche gerade einen Rollator für dich — für unseren Ostsee-Urlaub.
+          Ich, dein Robin, suche gerade einen Rollator für dich — für unseren Ostsee-Urlaub.
         </p>
         <p>
           Damit ich was Schönes finde, das wirklich zu dir passt, würde ich gern wissen, was dir gefällt und worauf du Wert legst. Am Ende schickst du mir deine Antworten einfach per WhatsApp.
@@ -538,7 +542,7 @@
     <!-- RESULT -->
     <section class="slide" data-slide="result">
       <div class="card">
-        <h2>Fertig, danke Oma! 🎉</h2>
+        <h2>Fertig, danke Oma Monika! 🎉</h2>
         <p class="lead">
           Das hier hilft mir bei der Suche. Tipp auf den grünen Knopf, dann schickst du es mir per WhatsApp.
         </p>
@@ -549,7 +553,7 @@
           <button class="btn btn-ghost" data-action="restart">Nochmal von vorne</button>
         </div>
         <p class="small-note">
-          Wenn WhatsApp aufgeht, wähl Robin in deinen Kontakten aus — der Text ist schon fertig getippt.
+          WhatsApp öffnet direkt unseren Chat — du musst nur noch auf Senden tippen.
         </p>
       </div>
     </section>
@@ -568,14 +572,24 @@
     //         maxLoad (kg), seat (bool), basket (bool), colors[], pros, url, image
     const ROLLATORS = window.__ROLLATORS_DATA__ || [];
 
+    // ================== EMPFÄNGER (obfuscated) ==================
+    // Nummer in Stücke gesplittet, damit naive Phone-Scraper sie nicht per
+    // Regex (\+\d{10,}) im Source-Code finden. Wird nur zur Klick-Zeit
+    // zusammengesetzt und an wa.me als URL übergeben (transient navigation,
+    // landet nicht im DOM).
+    const _w = ['4', '9', '1', '7', '2', '1', '5', '6', '1', '9', '4', '6'];
+    function _waTo() { return _w.join(''); }
+
     // ================== STATE ==================
     const state = {
       stepIndex: 0,
       duels: [],          // { left, right, winner }
       environment: null,  // 'drinnen' | 'draußen' | 'beides' | 'urlaub'
+      height: null,       // 'klein' | 'mittel' | 'groß' | 'sehr-groß' | 'egal'
+      lifter: null,       // 'allein' | 'hilfe' | 'zuhause' | 'urlaub'
+      brakes: null,       // 'druck' | 'zug' | 'egal'
       priorities: [],     // string[]
-      color: null,        // string
-      notes: '',          // string
+      colors: [],         // string[]
     };
 
     // ================== WIZARD-AUFBAU ==================
@@ -617,7 +631,7 @@
       return COLOR_HEX[key] || '#d8dadf';
     }
 
-    // Wizard-Schritt-Definition
+    // Wizard-Schritt-Definition (Reihenfolge: erst leicht/visuell, dann Kontext, dann Detail)
     function buildSteps() {
       state.duels = buildDuels(ROLLATORS);
       const steps = [];
@@ -630,14 +644,20 @@
       // 2) Wo wird er benutzt?
       steps.push({ kind: 'environment', render: renderEnvironment });
 
-      // 3) Was muss er können?
+      // 3) Körpergröße — wichtigster ergonomischer Faktor
+      steps.push({ kind: 'height', render: renderHeight });
+
+      // 4) Wer hebt ihn ins Auto? — koppelt Gewicht & Mobilität
+      steps.push({ kind: 'lifter', render: renderLifter });
+
+      // 5) Bremsen-Bedienung — bei Hand-/Schulterproblemen relevant
+      steps.push({ kind: 'brakes', render: renderBrakes });
+
+      // 6) Was muss er können? (Multi)
       steps.push({ kind: 'priorities', render: renderPriorities });
 
-      // 4) Farbe
+      // 7) Farbe (Multi)
       steps.push({ kind: 'color', render: renderColor });
-
-      // 5) Notizen
-      steps.push({ kind: 'notes', render: renderNotes });
 
       return steps;
     }
@@ -665,13 +685,68 @@
     }
 
     function duelCard(r, side, i, selected) {
+      // Bewusst ohne Markenname/Modellname — Oma kauft mit den Augen, Robin sieht
+      // den Modellnamen nur im Result-Text (für die Folge-Recherche).
       return `
-        <button class="duel-card ${selected ? 'selected' : ''}" data-action="duel-pick" data-side="${side}" data-i="${i}" aria-pressed="${selected}">
-          <img class="duel-img" src="${r.image}" alt="${r.brand} ${r.name}" loading="lazy" onerror="this.style.opacity=0.25" />
-          <div class="duel-name">${r.brand} ${r.name}</div>
+        <button class="duel-card ${selected ? 'selected' : ''}" data-action="duel-pick" data-side="${side}" data-i="${i}" aria-pressed="${selected}" aria-label="Auswahl ${i + 1}: ${r.brand} ${r.name}">
+          <img class="duel-img" src="${r.image}" alt="" loading="lazy" onerror="this.style.opacity=0.25" />
           ${r.trait ? `<p class="duel-trait">${r.trait}</p>` : ''}
         </button>
       `;
+    }
+
+    function singleChoiceCard(opts, currentValue, action, title, hint) {
+      return `
+        <div class="card">
+          <h2>${title}</h2>
+          <p>${hint}</p>
+          <div class="choices">
+            ${opts.map(o => `
+              <button class="choice ${currentValue === o.id ? 'selected' : ''}" data-action="${action}" data-id="${o.id}" aria-pressed="${currentValue === o.id}">
+                <span class="choice-emoji" aria-hidden="true">${o.emoji}</span>
+                <span class="choice-label">${o.label}</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHeight() {
+      const opts = [
+        { id: 'klein',     emoji: '📏', label: 'Eher klein (unter 1,60 m)' },
+        { id: 'mittel',    emoji: '📐', label: 'Mittel (1,60–1,70 m)' },
+        { id: 'groß',      emoji: '📊', label: 'Eher groß (1,70–1,80 m)' },
+        { id: 'sehr-groß', emoji: '🦒', label: 'Richtig groß (über 1,80 m)' },
+        { id: 'egal',      emoji: '🤷', label: 'Weiß ich nicht — egal' },
+      ];
+      return singleChoiceCard(opts, state.height, 'height-pick',
+        'Wie groß bist du ungefähr?',
+        'Damit der Rollator richtig zu dir passt — die Griffe sollen die richtige Höhe haben.');
+    }
+
+    function renderLifter() {
+      const opts = [
+        { id: 'allein',  emoji: '💪', label: 'Ich, ganz allein — er muss leicht sein' },
+        { id: 'hilfe',   emoji: '👫', label: 'Meistens hilft mir jemand' },
+        { id: 'zuhause', emoji: '🏠', label: 'Bleibt eh meistens zuhause' },
+        { id: 'urlaub',  emoji: '✈️', label: 'Kommt mit in den Urlaub (Ostsee!)' },
+      ];
+      return singleChoiceCard(opts, state.lifter, 'lifter-pick',
+        'Muss er ins Auto passen — wer hebt ihn rein?',
+        'Wenn du ihn allein heben musst, suchen wir was richtig Leichtes.');
+    }
+
+    function renderBrakes() {
+      const opts = [
+        { id: 'druck', emoji: '👇', label: 'Runterdrücken (sanft für die Hände)' },
+        { id: 'zug',   emoji: '✊', label: 'Zusammenziehen wie am Fahrrad' },
+        { id: 'egal',  emoji: '🤔', label: 'Ist mir egal — Hauptsache, sie halten' },
+      ];
+      return singleChoiceCard(opts, state.brakes, 'brakes-pick',
+        'Wie sollen die Bremsen funktionieren?',
+        'Manchen tun die Hände weh, wenn sie ziehen müssen — Drücken ist dann angenehmer.');
     }
 
     function renderEnvironment() {
@@ -728,33 +803,22 @@
 
     function renderColor() {
       const colors = getAllColors(ROLLATORS);
-      colors.push('Ist mir egal');
       return `
         <div class="card">
-          <h2>Welche Farbe magst du?</h2>
-          <p>Tipp eine an — oder sag, dass es dir egal ist.</p>
+          <h2>Welche Farben magst du?</h2>
+          <p>Tipp alle an, die dir gefallen. Du kannst auch nichts auswählen — dann ist es uns egal.</p>
           <div class="swatches">
             ${colors.map(c => {
               const bg = colorBg(c);
+              const selected = state.colors.includes(c);
               return `
-                <button class="swatch ${state.color === c ? 'selected' : ''}" data-action="color-pick" data-color="${c}" aria-pressed="${state.color === c}">
+                <button class="swatch ${selected ? 'selected' : ''}" data-action="color-toggle" data-color="${c}" aria-pressed="${selected}">
                   <span class="swatch-disc" style="background: ${bg};" aria-hidden="true"></span>
                   <span>${c}</span>
                 </button>
               `;
             }).join('')}
           </div>
-        </div>
-      `;
-    }
-
-    function renderNotes() {
-      return `
-        <div class="card">
-          <h2>Möchtest du mir noch was sagen?</h2>
-          <p>Musst du nicht. Du kannst es auch leer lassen.</p>
-          <label for="notes-field" style="position: absolute; left: -9999px;">Notiz an Robin</label>
-          <textarea class="notes" id="notes-field" placeholder="Zum Beispiel: 'Ich brauche unbedingt einen Sitz'" rows="5">${escapeHtml(state.notes)}</textarea>
         </div>
       `;
     }
@@ -774,10 +838,6 @@
     const resultSlide = document.querySelector('[data-slide="result"]');
 
     function renderStep() {
-      // Save notes if leaving notes step
-      const notesField = document.getElementById('notes-field');
-      if (notesField) state.notes = notesField.value;
-
       // intro & result toggling
       introSlide.classList.toggle('active', state.stepIndex === -1);
       resultSlide.classList.toggle('active', state.stepIndex === STEPS.length);
@@ -821,15 +881,11 @@
     }
 
     function next() {
-      const notesField = document.getElementById('notes-field');
-      if (notesField) state.notes = notesField.value;
       state.stepIndex = Math.min(state.stepIndex + 1, STEPS.length);
       renderStep();
     }
 
     function back() {
-      const notesField = document.getElementById('notes-field');
-      if (notesField) state.notes = notesField.value;
       state.stepIndex = Math.max(state.stepIndex - 1, -1);
       renderStep();
     }
@@ -873,6 +929,40 @@
         lines.push('');
       }
 
+      const heightLabels = {
+        'klein':     'eher klein (unter 1,60 m)',
+        'mittel':    'mittel (1,60–1,70 m)',
+        'groß':      'eher groß (1,70–1,80 m)',
+        'sehr-groß': 'richtig groß (über 1,80 m)',
+        'egal':      'egal',
+      };
+      if (state.height) {
+        lines.push(`Meine Größe: ${heightLabels[state.height]}`);
+        lines.push('');
+      }
+
+      const lifterLabels = {
+        'allein':  'Ich heb ihn allein ins Auto — bitte richtig leicht',
+        'hilfe':   'Meistens hilft mir jemand beim Auto-Heben',
+        'zuhause': 'Bleibt eh meist zuhause',
+        'urlaub':  'Kommt mit in den Urlaub (Ostsee)',
+      };
+      if (state.lifter) {
+        lines.push('Beim Auto:');
+        lines.push(`  ${lifterLabels[state.lifter]}`);
+        lines.push('');
+      }
+
+      const brakesLabels = {
+        'druck': 'Bremsen, die ich runterdrücken kann (sanft für die Hände)',
+        'zug':   'Bremsen zum Zusammenziehen (wie am Fahrrad)',
+        'egal':  'Bremsen-Typ ist mir egal',
+      };
+      if (state.brakes) {
+        lines.push(`Bremsen: ${brakesLabels[state.brakes]}`);
+        lines.push('');
+      }
+
       if (state.priorities.length) {
         lines.push('Wichtig ist mir:');
         const labels = {
@@ -889,19 +979,16 @@
         lines.push('');
       }
 
-      if (state.color) {
-        lines.push(`Farbe: ${state.color}`);
-        lines.push('');
-      }
-
-      if (state.notes && state.notes.trim()) {
-        lines.push('Noch was von mir:');
-        lines.push(state.notes.trim());
+      if (state.colors.length) {
+        const list = state.colors.length === 1
+          ? state.colors[0]
+          : state.colors.slice(0, -1).join(', ') + ' oder ' + state.colors.slice(-1);
+        lines.push(`Farbe: ${list}`);
         lines.push('');
       }
 
       lines.push('Schau mal, was du damit findest 🫶');
-      lines.push('Deine Oma');
+      lines.push('Deine Oma Monika');
       return lines.join('\n');
     }
 
@@ -955,8 +1042,29 @@
           break;
         }
 
-        case 'color-pick': {
-          state.color = target.dataset.color;
+        case 'height-pick': {
+          state.height = target.dataset.id;
+          renderStep();
+          break;
+        }
+
+        case 'lifter-pick': {
+          state.lifter = target.dataset.id;
+          renderStep();
+          break;
+        }
+
+        case 'brakes-pick': {
+          state.brakes = target.dataset.id;
+          renderStep();
+          break;
+        }
+
+        case 'color-toggle': {
+          const c = target.dataset.color;
+          const idx = state.colors.indexOf(c);
+          if (idx >= 0) state.colors.splice(idx, 1);
+          else state.colors.push(c);
           renderStep();
           break;
         }
@@ -965,9 +1073,11 @@
           state.stepIndex = -1;
           state.duels.forEach(d => d.winner = null);
           state.environment = null;
+          state.height = null;
+          state.lifter = null;
+          state.brakes = null;
           state.priorities = [];
-          state.color = null;
-          state.notes = '';
+          state.colors = [];
           renderStep();
           break;
 
@@ -980,9 +1090,9 @@
 
         case 'whatsapp': {
           const text = encodeURIComponent(buildResultText());
-          // wa.me ohne Nummer öffnet WhatsApp und lässt Oma den Empfänger wählen.
-          // Funktioniert auf iOS und Android, fällt im Desktop-Browser auf web.whatsapp.com zurück.
-          window.location.href = `https://wa.me/?text=${text}`;
+          // Direkt zu Robins Chat: wa.me/<nummer>?text=...
+          // Funktioniert auf iOS WhatsApp und Android, Desktop-Fallback web.whatsapp.com
+          window.location.href = `https://wa.me/${_waTo()}?text=${text}`;
           break;
         }
       }

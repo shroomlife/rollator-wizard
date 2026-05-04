@@ -36,7 +36,7 @@ window.__ROLLATORS_DATA__ = [
     colors: ['schwarz'],
     pros: 'Stiftung-Warentest-Mitsieger 2019. Magnetischer Faltmechanismus.',
     url: 'https://www.seeger24.de/Russka-Vital-Carbon-Rollator/0000028247.01',
-    image: './assets/rollators/russka-vital-carbon.jpg',
+    image: './assets/rollators/russka-vital-carbon.webp',
   },
   {
     id: 'topro',
