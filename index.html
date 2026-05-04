@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rollator-Wahl für Oma · Wizard</title>
+  <meta name="description" content="Liebe Oma, hier kannst du dir deine Lieblings-Rollatoren aussuchen. Am Ende schickst du mir das Ergebnis per WhatsApp." />
+  <meta name="theme-color" content="#fafbf7" />
+
+  <!-- Open Graph für WhatsApp-Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Rollator-Wahl für Oma 🫶" />
+  <meta property="og:description" content="Such dir aus, welcher Rollator dir am meisten gefällt — wir nehmen ihn mit an die Ostsee." />
+  <meta property="og:image" content="./assets/og-image.webp" />
+  <meta property="og:image:width" content="1820" />
+  <meta property="og:image:height" content="1024" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🫶%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    :root {
+      /* Klar, ruhig, hoher Kontrast — eine Akzentfarbe (Mint) */
+      --bg: #f7f7f3;
+      --bg-soft: #ececdf;
+      --surface: #ffffff;
+      --ink: #15202b;
+      --ink-soft: #4a5564;
+      --ink-mute: #7d8694;
+
+      --accent: #2f8f5e;        /* mint-deep für Aktion + Selected */
+      --accent-soft: #e6f3ec;   /* selected-Background */
+      --accent-text: #1d6442;   /* dunkler Akzent für Text */
+
+      --warn: #b35100;          /* warmer Orange-Ton für "Weder noch" */
+
+      --border: #d8dadf;
+      --border-strong: #b3b7bf;
+
+      --radius-md: 1rem;
+      --radius-lg: 1.25rem;
+      --radius-xl: 1.5rem;
+
+      --shadow-soft: 0 2px 8px rgba(21, 32, 43, 0.06);
+      --shadow-card: 0 4px 12px rgba(21, 32, 43, 0.08);
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+      /* Groß für Oma, ruhig gestaffelt */
+      --fs-body: 22px;
+      --fs-button: 24px;
+      --fs-heading: 36px;
+      --fs-hero: 42px;
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --fs-body: 20px;
+        --fs-button: 22px;
+        --fs-heading: 30px;
+        --fs-hero: 34px;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--bg);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .stage {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress oben — ruhig, klar */
+    .progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 10px 18px;
+      margin: 0 auto 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 18px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .progress.hidden { visibility: hidden; }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .progress-dot.done {
+      background: var(--accent);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+      width: 28px;
+      border-radius: 9999px;
+    }
+
+    /* Slide-Container */
+    .slide {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Karten — klar, weiß, eindeutig */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 32px 24px;
+    }
+
+    .card + .card { margin-top: 20px; }
+
+    /* Headlines */
+    h1, h2, h3 {
+      margin: 0 0 16px;
+      letter-spacing: -0.01em;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    h1 { font-size: var(--fs-hero); }
+    h2 { font-size: var(--fs-heading); }
+
+    p { margin: 0 0 18px; color: var(--ink-soft); }
+    p.lead { font-size: 24px; color: var(--ink); line-height: 1.5; }
+
+    /* Buttons — groß, klar, eine Akzentfarbe */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 22px 28px;
+      min-height: 72px;
+      font-family: inherit;
+      font-size: var(--fs-button);
+      font-weight: 700;
+      line-height: 1.2;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+      text-decoration: none;
+      width: 100%;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover { background: var(--accent-text); border-color: var(--accent-text); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+
+    .btn-secondary:hover { background: var(--bg-soft); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink-soft);
+      min-height: 60px;
+      font-size: 20px;
+      font-weight: 600;
+      padding: 14px 22px;
+      border-color: transparent;
+    }
+
+    .btn-ghost:hover {
+      color: var(--ink);
+      background: var(--bg-soft);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-row.horizontal {
+      flex-direction: row;
+    }
+
+    .btn-row.horizontal .btn { flex: 1; }
+
+    /* Bildvergleich – Bild GROẞ über Name+Trait */
+    .duel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .duel-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 3px solid var(--border);
+      padding: 16px 16px 22px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      text-align: center;
+      width: 100%;
+      font-family: inherit;
+      transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .duel-card:hover { border-color: var(--border-strong); }
+
+    .duel-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .duel-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .duel-img {
+      width: 100%;
+      height: 240px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: var(--surface);
+      display: block;
+    }
+
+    .duel-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin: 0 0 4px;
+    }
+
+    .duel-trait {
+      font-size: 18px;
+      color: var(--ink-soft);
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    /* Multi-Choice — klare Liste */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .choice {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 22px;
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+      font-size: var(--fs-button);
+      font-weight: 600;
+      color: var(--ink);
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .choice:hover { border-color: var(--border-strong); }
+
+    .choice.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .choice-emoji {
+      font-size: 32px;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 40px;
+      text-align: center;
+    }
+
+    .choice-label { flex: 1; line-height: 1.3; }
+
+    .choice-check {
+      margin-left: auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      border: 2px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .choice.selected .choice-check {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .choice.selected .choice-check::after {
+      content: '✓';
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    /* Color-Swatches */
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 10px;
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--ink);
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .swatch:hover { border-color: var(--border-strong); }
+
+    .swatch.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .swatch-disc {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* Textarea */
+    .notes {
+      width: 100%;
+      padding: 18px;
+      font-family: inherit;
+      font-size: 20px;
+      line-height: 1.45;
+      color: var(--ink);
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-radius: var(--radius-md);
+      resize: vertical;
+      min-height: 140px;
+      box-sizing: border-box;
+      -webkit-appearance: none;
+    }
+
+    .notes:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Result */
+    .result-text {
+      background: var(--bg-soft);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+    }
+
+    /* Toast — verlässlich versteckt */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      transform: translate(-50%, 0);
+      background: var(--ink);
+      color: #fff;
+      padding: 16px 26px;
+      border-radius: 9999px;
+      font-size: 19px;
+      font-weight: 600;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s var(--ease), visibility 0.2s var(--ease);
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Hero-Illustration */
+    .hero-img {
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto 24px;
+      border-radius: var(--radius-md);
+      display: block;
+    }
+
+    .small-note {
+      font-size: 17px;
+      color: var(--ink-mute);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.45;
+    }
+
+    /* Footer-Spacer */
+    .footer-space { flex: 1; min-height: 20px; }
+  </style>
+</head>
+<body>
+
+  <main class="stage">
+    <div id="progress" class="progress hidden" aria-live="polite">
+      <span id="progress-label">Frage 1 von 6</span>
+      <div class="progress-dots" id="progress-dots"></div>
+    </div>
+
+    <!-- 0: INTRO -->
+    <section class="slide active" data-slide="intro">
+      <div class="card" style="text-align: center;">
+        <img src="./assets/og-image.webp" alt="Oma am Strand" class="hero-img" />
+        <h1>Hallo Oma 🫶</h1>
+        <p class="lead">
+          Ich suche gerade einen Rollator für dich — für unseren Ostsee-Urlaub.
+        </p>
+        <p>
+          Damit ich was Schönes finde, das wirklich zu dir passt, würde ich gern wissen, was dir gefällt und worauf du Wert legst. Am Ende schickst du mir deine Antworten einfach per WhatsApp.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-action="start">Los geht's</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wizard-Slides werden via JS gerendert -->
+    <div id="wizard-host"></div>
+
+    <!-- RESULT -->
+    <section class="slide" data-slide="result">
+      <div class="card">
+        <h2>Fertig, danke Oma! 🎉</h2>
+        <p class="lead">
+          Das hier hilft mir bei der Suche. Tipp auf den grünen Knopf, dann schickst du es mir per WhatsApp.
+        </p>
+        <div class="result-text" id="result-text" aria-label="Deine Antwort"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-action="whatsapp">An Robin per WhatsApp</button>
+          <button class="btn btn-secondary" data-action="copy">Text kopieren</button>
+          <button class="btn btn-ghost" data-action="restart">Nochmal von vorne</button>
+        </div>
+        <p class="small-note">
+          Wenn WhatsApp aufgeht, wähl Robin in deinen Kontakten aus — der Text ist schon fertig getippt.
+        </p>
+      </div>
+    </section>
+
+    <div class="footer-space"></div>
+  </main>
+
+  <div id="toast" class="toast" role="status">Text kopiert ✓</div>
+
+  <!-- Daten zuerst laden, damit das Main-Script sauber initialisieren kann -->
+  <script src="./rollators.js"></script>
+
+  <script>
+    // ================== DATEN ==================
+    // Felder: id, brand, name, price (EUR), weight (kg), foldedSize (cm),
+    //         maxLoad (kg), seat (bool), basket (bool), colors[], pros, url, image
+    const ROLLATORS = window.__ROLLATORS_DATA__ || [];
+
+    // ================== STATE ==================
+    const state = {
+      stepIndex: 0,
+      duels: [],          // { left, right, winner }
+      environment: null,  // 'drinnen' | 'draußen' | 'beides' | 'urlaub'
+      priorities: [],     // string[]
+      color: null,        // string
+      notes: '',          // string
+    };
+
+    // ================== WIZARD-AUFBAU ==================
+    function buildDuels(rollators) {
+      // Bilde Paare aus aufeinanderfolgenden Rollatoren — bei n=6 → 3 Duelle
+      const duels = [];
+      for (let i = 0; i + 1 < rollators.length; i += 2) {
+        duels.push({ left: rollators[i], right: rollators[i + 1], winner: null });
+      }
+      return duels;
+    }
+
+    function getAllColors(rollators) {
+      const set = new Set();
+      rollators.forEach(r => (r.colors || []).forEach(c => set.add(c)));
+      return Array.from(set);
+    }
+
+    const COLOR_HEX = {
+      'silber':     '#c8ccd1',
+      'anthrazit':  '#3d4451',
+      'schwarz':    '#222831',
+      'weiß':       '#f3f4f0',
+      'rot':        '#c0383f',
+      'blau':       '#3d6dbd',
+      'grün':       '#3a8e5e',
+      'champagner': '#e6d6ba',
+      'bronze':     '#a07a4f',
+      'gold':       '#d4b75a',
+      'kirsch':     '#7a1f33',
+      'beere':      '#6b2a40',
+      'beige':      '#d8c8a9',
+      'grau':       '#8b919a',
+      'ist mir egal': '#e8e8e0',
+    };
+
+    function colorBg(color) {
+      const key = (color || '').toLowerCase();
+      return COLOR_HEX[key] || '#d8dadf';
+    }
+
+    // Wizard-Schritt-Definition
+    function buildSteps() {
+      state.duels = buildDuels(ROLLATORS);
+      const steps = [];
+
+      // 1) Bildvergleiche
+      state.duels.forEach((duel, i) => {
+        steps.push({ kind: 'duel', index: i, render: () => renderDuel(i) });
+      });
+
+      // 2) Wo wird er benutzt?
+      steps.push({ kind: 'environment', render: renderEnvironment });
+
+      // 3) Was muss er können?
+      steps.push({ kind: 'priorities', render: renderPriorities });
+
+      // 4) Farbe
+      steps.push({ kind: 'color', render: renderColor });
+
+      // 5) Notizen
+      steps.push({ kind: 'notes', render: renderNotes });
+
+      return steps;
+    }
+
+    let STEPS = [];
+
+    // ================== RENDERER ==================
+    function renderDuel(i) {
+      const duel = state.duels[i];
+      return `
+        <div class="card">
+          <h2>Welcher gefällt dir besser?</h2>
+          <p>Tipp den an, den du schöner findest. Oder sag, dass dir keiner gefällt.</p>
+          <div class="duel">
+            ${duelCard(duel.left, 'left', i, duel.winner === 'left')}
+            ${duelCard(duel.right, 'right', i, duel.winner === 'right')}
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" data-action="duel-skip" data-i="${i}" aria-pressed="${duel.winner === 'skip'}">
+              ${duel.winner === 'skip' ? '✓ ' : ''}Weder noch
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function duelCard(r, side, i, selected) {
+      return `
+        <button class="duel-card ${selected ? 'selected' : ''}" data-action="duel-pick" data-side="${side}" data-i="${i}" aria-pressed="${selected}">
+          <img class="duel-img" src="${r.image}" alt="${r.brand} ${r.name}" loading="lazy" onerror="this.style.opacity=0.25" />
+          <div class="duel-name">${r.brand} ${r.name}</div>
+          ${r.trait ? `<p class="duel-trait">${r.trait}</p>` : ''}
+        </button>
+      `;
+    }
+
+    function renderEnvironment() {
+      const opts = [
+        { id: 'drinnen', emoji: '🏠', label: 'Drinnen, in der Wohnung' },
+        { id: 'draußen', emoji: '🌳', label: 'Draußen, beim Spazieren' },
+        { id: 'beides',  emoji: '🚶‍♀️', label: 'Drinnen und draußen, ungefähr gleich' },
+        { id: 'urlaub',  emoji: '🏖️', label: 'Vor allem für Reisen' },
+      ];
+      return `
+        <div class="card">
+          <h2>Wo benutzt du ihn am meisten?</h2>
+          <p>Tipp das an, was am ehesten passt.</p>
+          <div class="choices">
+            ${opts.map(o => `
+              <button class="choice ${state.environment === o.id ? 'selected' : ''}" data-action="env-pick" data-id="${o.id}" aria-pressed="${state.environment === o.id}">
+                <span class="choice-emoji" aria-hidden="true">${o.emoji}</span>
+                <span class="choice-label">${o.label}</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPriorities() {
+      const opts = [
+        { id: 'sitz',     emoji: '🪑', label: 'Ein bequemer Sitz für Pausen' },
+        { id: 'leicht',   emoji: '🪶', label: 'Leicht zum Schieben' },
+        { id: 'griffe',   emoji: '🤲', label: 'Bequem in den Händen' },
+        { id: 'bremsen',  emoji: '✋', label: 'Bremsen, die ich gut bedienen kann' },
+        { id: 'korb',     emoji: '🛍️', label: 'Eine schöne Tasche für meine Sachen' },
+        { id: 'stabil',   emoji: '💪', label: 'Stabil auf Kopfsteinpflaster' },
+        { id: 'klein',    emoji: '📦', label: 'Klein zum Zusammenfalten' },
+        { id: 'schoen',   emoji: '✨', label: 'Soll schön aussehen' },
+      ];
+      return `
+        <div class="card">
+          <h2>Was ist dir wichtig?</h2>
+          <p>Tipp alles an, was dir wichtig ist. Du kannst auch mehrere wählen.</p>
+          <div class="choices">
+            ${opts.map(o => `
+              <button class="choice ${state.priorities.includes(o.id) ? 'selected' : ''}" data-action="prio-toggle" data-id="${o.id}" aria-pressed="${state.priorities.includes(o.id)}">
+                <span class="choice-emoji" aria-hidden="true">${o.emoji}</span>
+                <span class="choice-label">${o.label}</span>
+                <span class="choice-check" aria-hidden="true"></span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderColor() {
+      const colors = getAllColors(ROLLATORS);
+      colors.push('Ist mir egal');
+      return `
+        <div class="card">
+          <h2>Welche Farbe magst du?</h2>
+          <p>Tipp eine an — oder sag, dass es dir egal ist.</p>
+          <div class="swatches">
+            ${colors.map(c => {
+              const bg = colorBg(c);
+              return `
+                <button class="swatch ${state.color === c ? 'selected' : ''}" data-action="color-pick" data-color="${c}" aria-pressed="${state.color === c}">
+                  <span class="swatch-disc" style="background: ${bg};" aria-hidden="true"></span>
+                  <span>${c}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNotes() {
+      return `
+        <div class="card">
+          <h2>Möchtest du mir noch was sagen?</h2>
+          <p>Musst du nicht. Du kannst es auch leer lassen.</p>
+          <label for="notes-field" style="position: absolute; left: -9999px;">Notiz an Robin</label>
+          <textarea class="notes" id="notes-field" placeholder="Zum Beispiel: 'Ich brauche unbedingt einen Sitz'" rows="5">${escapeHtml(state.notes)}</textarea>
+        </div>
+      `;
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+    }
+
+    // ================== NAVIGATION ==================
+    const host = document.getElementById('wizard-host');
+    const progressEl = document.getElementById('progress');
+    const progressDots = document.getElementById('progress-dots');
+    const progressLabel = document.getElementById('progress-label');
+    const introSlide = document.querySelector('[data-slide="intro"]');
+    const resultSlide = document.querySelector('[data-slide="result"]');
+
+    function renderStep() {
+      // Save notes if leaving notes step
+      const notesField = document.getElementById('notes-field');
+      if (notesField) state.notes = notesField.value;
+
+      // intro & result toggling
+      introSlide.classList.toggle('active', state.stepIndex === -1);
+      resultSlide.classList.toggle('active', state.stepIndex === STEPS.length);
+
+      // Wizard slide
+      if (state.stepIndex >= 0 && state.stepIndex < STEPS.length) {
+        const step = STEPS[state.stepIndex];
+        host.innerHTML = `
+          <section class="slide active">
+            ${step.render()}
+            <div class="btn-row horizontal" style="margin-top: 20px;">
+              <button class="btn btn-ghost" data-action="back">← Zurück</button>
+              <button class="btn btn-primary" data-action="next">Weiter →</button>
+            </div>
+          </section>
+        `;
+        progressEl.classList.remove('hidden');
+        renderProgress();
+      } else {
+        host.innerHTML = '';
+        progressEl.classList.add('hidden');
+      }
+
+      // Result rendering
+      if (state.stepIndex === STEPS.length) {
+        document.getElementById('result-text').textContent = buildResultText();
+      }
+
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderProgress() {
+      progressLabel.textContent = `Frage ${state.stepIndex + 1} von ${STEPS.length}`;
+      progressDots.innerHTML = STEPS.map((_, i) => {
+        let cls = '';
+        if (i < state.stepIndex) cls = 'done';
+        else if (i === state.stepIndex) cls = 'current';
+        return `<span class="progress-dot ${cls}"></span>`;
+      }).join('');
+    }
+
+    function next() {
+      const notesField = document.getElementById('notes-field');
+      if (notesField) state.notes = notesField.value;
+      state.stepIndex = Math.min(state.stepIndex + 1, STEPS.length);
+      renderStep();
+    }
+
+    function back() {
+      const notesField = document.getElementById('notes-field');
+      if (notesField) state.notes = notesField.value;
+      state.stepIndex = Math.max(state.stepIndex - 1, -1);
+      renderStep();
+    }
+
+    // ================== RESULT-TEXT ==================
+    // Ziel: Robins Suche besser machen — keine Preise, keine "kauf das"-Logik.
+    // Robin bekommt eine Liste von Vorlieben, mit denen er weiter recherchiert.
+    function buildResultText() {
+      const lines = [];
+      lines.push('🫶 Hallo Robin, hier meine Rollator-Vorlieben:');
+      lines.push('');
+
+      const wins = state.duels.filter(d => d.winner && d.winner !== 'skip');
+      if (wins.length) {
+        lines.push('Optisch gefallen mir:');
+        wins.forEach(d => {
+          const r = d.winner === 'left' ? d.left : d.right;
+          lines.push(`  • ${r.brand} ${r.name}${r.trait ? ' — ' + r.trait.toLowerCase() : ''}`);
+        });
+        lines.push('');
+      } else {
+        lines.push('Bei den Bildern hatte ich keinen klaren Favoriten — such gerne weiter.');
+        lines.push('');
+      }
+
+      const skipped = state.duels.filter(d => d.winner === 'skip').length;
+      if (skipped) {
+        lines.push(`(Bei ${skipped} Vergleich${skipped > 1 ? 'en' : ''} hat mich keiner überzeugt.)`);
+        lines.push('');
+      }
+
+      const envLabels = {
+        'drinnen': 'Vor allem drinnen, in der Wohnung',
+        'draußen': 'Vor allem draußen, beim Spazieren',
+        'beides':  'Drinnen und draußen ungefähr gleich',
+        'urlaub':  'Hauptsächlich für Reisen',
+      };
+      if (state.environment) {
+        lines.push('Wo ich ihn brauche:');
+        lines.push(`  ${envLabels[state.environment]}`);
+        lines.push('');
+      }
+
+      if (state.priorities.length) {
+        lines.push('Wichtig ist mir:');
+        const labels = {
+          sitz:    'ein bequemer Sitz für Pausen',
+          leicht:  'leicht zum Schieben',
+          griffe:  'angenehm in den Händen',
+          bremsen: 'Bremsen, die ich gut bedienen kann',
+          korb:    'eine schöne Tasche für meine Sachen',
+          stabil:  'stabil auf Kopfsteinpflaster',
+          klein:   'klein zum Zusammenfalten',
+          schoen:  'soll schön aussehen',
+        };
+        state.priorities.forEach(id => lines.push(`  • ${labels[id] || id}`));
+        lines.push('');
+      }
+
+      if (state.color) {
+        lines.push(`Farbe: ${state.color}`);
+        lines.push('');
+      }
+
+      if (state.notes && state.notes.trim()) {
+        lines.push('Noch was von mir:');
+        lines.push(state.notes.trim());
+        lines.push('');
+      }
+
+      lines.push('Schau mal, was du damit findest 🫶');
+      lines.push('Deine Oma');
+      return lines.join('\n');
+    }
+
+    // ================== ACTIONS ==================
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      const action = target.dataset.action;
+
+      switch (action) {
+        case 'start':
+          state.stepIndex = 0;
+          renderStep();
+          break;
+
+        case 'next':
+          next();
+          break;
+
+        case 'back':
+          back();
+          break;
+
+        case 'duel-pick': {
+          const i = +target.dataset.i;
+          const side = target.dataset.side;
+          state.duels[i].winner = side;
+          renderStep();
+          break;
+        }
+
+        case 'duel-skip': {
+          const i = +target.dataset.i;
+          state.duels[i].winner = 'skip';
+          renderStep();
+          break;
+        }
+
+        case 'prio-toggle': {
+          const id = target.dataset.id;
+          const idx = state.priorities.indexOf(id);
+          if (idx >= 0) state.priorities.splice(idx, 1);
+          else state.priorities.push(id);
+          renderStep();
+          break;
+        }
+
+        case 'env-pick': {
+          state.environment = target.dataset.id;
+          renderStep();
+          break;
+        }
+
+        case 'color-pick': {
+          state.color = target.dataset.color;
+          renderStep();
+          break;
+        }
+
+        case 'restart':
+          state.stepIndex = -1;
+          state.duels.forEach(d => d.winner = null);
+          state.environment = null;
+          state.priorities = [];
+          state.color = null;
+          state.notes = '';
+          renderStep();
+          break;
+
+        case 'copy': {
+          copyToClipboard(buildResultText())
+            .then(() => showToast('Text kopiert ✓'))
+            .catch(() => showToast('Kopieren ging nicht — bitte Text auswählen und kopieren'));
+          break;
+        }
+
+        case 'whatsapp': {
+          const text = encodeURIComponent(buildResultText());
+          // wa.me ohne Nummer öffnet WhatsApp und lässt Oma den Empfänger wählen.
+          // Funktioniert auf iOS und Android, fällt im Desktop-Browser auf web.whatsapp.com zurück.
+          window.location.href = `https://wa.me/?text=${text}`;
+          break;
+        }
+      }
+    });
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          ta.remove();
+          ok ? resolve() : reject(new Error('execCommand copy returned false'));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (msg) toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // ================== INIT ==================
+    function init() {
+      if (!ROLLATORS.length) {
+        host.innerHTML = `
+          <div class="card">
+            <h2>⏳ Daten werden geladen…</h2>
+            <p>Robin sucht gerade die Rollatoren raus. Bitte später nochmal vorbeischauen 🫶</p>
+          </div>
+        `;
+        return;
+      }
+      STEPS = buildSteps();
+      state.stepIndex = -1;
+      renderStep();
+    }
+
+    init();
+  </script>
+</body>
+</html>
