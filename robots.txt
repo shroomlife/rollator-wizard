@@ -1,2 +1,19 @@
+# Privater Familien-Wizard — keine Suchmaschinen-Indexierung,
+# aber WhatsApp / Signal / Telegram dürfen Link-Previews bauen.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: SignalBot
+Allow: /
+
 User-agent: *
 Disallow: /
